@@ -1,0 +1,53 @@
+#' Count IV
+#'
+#' Function counts Information Value for a given feature.
+#'
+#' @param feature_vec Feature vector for which IV will be computed.
+#' @param status_vec Vector of 2-class target variable.
+#' It has to be in 0/1 format where 1 describes BAD population
+#' and 0 is GOOD population.
+#' @param start_with_buckets Boolean value which determines whether or not
+#' feature_vec is already bucketed. Default is FALSE, which means that
+#' feature_vec is not bucketed.
+#' @param ... Argument no_buckets to pass to make_buckets function if
+#' start_with_buckets is set to FALSE.
+#' @param correction Correction parameter which ensures that even
+#' if in one or more buckets there is no value of one target variable type,
+#' IV will still be computed.
+#'
+#' @return Function returns single value of IV for a given feature.
+#' @export
+#'
+#' @examples
+#'
+#' # library(tidyverse)
+#' df <- tibble(
+#'   feature = c(NA, 1, 1, 2, 3, 4, 4, 4, 6, 6, 7, 7, 7, 7, 8, 8, 8),
+#'   feature2 = c("a", "a", "a", "a", "a", "b", "b", "b", "c", "c", "c", "c", "d", "d", "d", "d", NA_character_),
+#'   target = c(0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1)
+#' )
+#'
+#' feature_buckets <- make_buckets(df$feature, 3)
+#' count_iv(feature_buckets, df$target, start_with_buckets = TRUE)
+#'
+#' count_iv(df$feature, df$target, no_buckets = 3)
+#'
+#' # Counting IV for multipe features
+#'
+#' df %>% map_df(count_iv, df$target, no_buckets = 3)
+#'
+#'
+count_iv <-
+  function(feature_vec, status_vec, start_with_buckets = FALSE, ..., correction = 0.5) {
+
+    if(!start_with_buckets) {
+      feature_vec <- feature_vec %>%
+        make_buckets(...)
+    }
+
+    count_woe(feature_vec, status_vec, start_with_buckets = TRUE) %>%
+      dplyr::summarise(iv = sum((share_good - share_bad) * woe)) %>%
+      dplyr::pull(iv)
+  }
+
+

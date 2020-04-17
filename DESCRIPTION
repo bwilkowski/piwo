@@ -1,0 +1,17 @@
+Package: piwo
+Type: Package
+Title: Count WoE, IV and PSI for large number of unbucketed features
+Version: 0.1.0
+Author: Bartosz Wilkowski
+Maintainer: The package maintainer <bartek.wilkowski@gmail.com>
+Description: TBD
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dplyr,
+    tidyr,
+    forcats,
+    stringr,
+    ggplot2
+RoxygenNote: 7.1.0
